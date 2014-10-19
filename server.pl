@@ -9,19 +9,18 @@ father(c-a, bertil).
 :- use_module(library(http/html_write)).
 :- use_module(library(http/http_parameters)).
 
-:- http_handler('/', query_father, []).
+:- http_handler('/', reply, []).
 
 
 
 
 
 server(Port) :-
-	format("listening to port ~w", Port),
     http_server(http_dispatch, [port(Port)]).
 
-query_father(Request) :-
+reply(Request) :-
 	reply_html_page(
-	   title('Who is the father'),
+	   title('Chatbot-title'),
 	   [\page_content(Request)]).
 
 page_content(Request) -->
@@ -31,19 +30,18 @@ page_content(Request) -->
 	         http_parameters(Request,
 				[
 				 % default for a missing param
-				 child(Child, [default(jonathan)])
+				 child(Input, [default('')])
 				]),
 	         _E,
 	         fail),
 	    !,
-	    father(Father, Child)
+	    Output = 'this is my answer'
 	},
 	
 	%% father(Father, Child),
 	html(
 	   [
-	    h1('Who is the father?'),
-	    p('The father is ~w' -Father)
+	    p('~w' -Output)
 	   ]).
 
 page_content(_Request) -->
