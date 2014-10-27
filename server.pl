@@ -12,45 +12,25 @@ father(c-a, bertil).
 :- http_handler('/', reply, []).
 
 
-
-
-
 server(Port) :-
     http_server(http_dispatch, [port(Port)]).
 
 reply(Request) :-
-	reply_html_page(
-	   title('Chatbot-title'),
-	   [\page_content(Request)]).
+	consult(nlp/main),
+	catch(
+	     http_parameters(Request,
+			[
+			 % default for a missing param
+			 input(Input, [default('')])
+			]),
+	     _E,
+	     fail)	,
+	!,
 
-page_content(Request) -->
-	{
-	 % catch because http_parameters throws if a param is invalid
-	    catch(
-	         http_parameters(Request,
-				[
-				 % default for a missing param
-				 child(Input, [default('')])
-				]),
-	         _E,
-	         fail),
-	    !,
-	    Output = 'this is my answer'
-	},
-	
-	%% father(Father, Child),
-	html(
-	   [
-	    p('~w' -Output)
-	   ]).
-
-page_content(_Request) -->
-	html(
-	    [
-	    h1('Oops!'),
-	    p('Some parameter wasnt valid')
-	    ]).
-
-
+	format('Content-type: text/html~n~n', []),
+	write("<pre>"),
+	atomic_list_concat(Words, " ", Input),
+	handle_input(Words, []),
+	write("</pre>").
 
 :- server(5001).
