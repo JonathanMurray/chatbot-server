@@ -10,7 +10,9 @@
 :- set_setting_default(http:cors, [*]).
 
 server(Port) :-
-    http_server(http_dispatch, [port(Port)]).
+    http_server(http_dispatch, [port(Port)]),
+    thread_get_message(_),
+    halt. 
 
 reply(Request) :-
 	cors_enable,
