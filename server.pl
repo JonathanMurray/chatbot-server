@@ -31,7 +31,7 @@ reply(Request) :-
 	format('Content-type: text/html~n~n', []),
 	write("<pre>"),
 	atomic_list_concat(Words, " ", Input),
-	handle_input(Words, []),
+	handle_input(Words, [non_interactive]),
 	write("</pre>").
 
 :- server(5001).
